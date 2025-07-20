@@ -9,7 +9,7 @@ st.markdown("Classify news as **real or fake** using a transformer model (demo).
 @st.cache_resource
 def load_model():
     try:
-        return pipeline("text-classification", model="Mridula-S-3006/bert-fake-news-model")
+        return pipeline("text-classification", model="bert-fake-news-model")
     except Exception as e:
         st.error(f"❌ Failed to load model: {e}")
         return None
