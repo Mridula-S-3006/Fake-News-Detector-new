@@ -1,3 +1,5 @@
+import os
+os.environ["STREAMLIT_CONFIG_FILE"] = os.path.abspath(".streamlit/config.toml")
 import streamlit as st
 from transformers import pipeline
 
