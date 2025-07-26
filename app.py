@@ -1,71 +1,78 @@
-import os
-os.environ["STREAMLIT_CONFIG_FILE"] = os.path.abspath(".streamlit/config.toml")
-import streamlit as st
 from transformers import pipeline
+import gradio as gr
 
-st.set_page_config(page_title="Fake News Detector", layout="centered")
-st.title("📰 Fake News Detector")
-st.markdown("Classify news as **real or fake** using a transformer model (demo).")
+# Load the model
+model = pipeline("text-classification", model="bert-fake-news-model")
 
-@st.cache_resource
-def load_model():
-    try:
-        return pipeline("text-classification", model="bert-fake-news-model")
-    except Exception as e:
-        st.error(f"❌ Failed to load model: {e}")
-        return None
-
-model = load_model()
-
-# Example input
+# Default example text
 example_text = "The Prime Minister announced a new healthcare plan today."
 
-# Session state to store input
-if "user_input" not in st.session_state:
-    st.session_state.user_input = example_text
+# Inference function
+def analyze_news(text_input, file_input, clear=False):
+    if clear:
+        return "", gr.update(value="")
 
-# Input box
-user_input = st.text_area("✍️ Enter news headline or article here:", 
-                          value=st.session_state.user_input, height=200)
+    results = []
 
-# File uploader
-uploaded_file = st.file_uploader("📂 Or upload a .txt file with one article per line", type=["txt"])
-
-# Buttons
-col1, col2 = st.columns(2)
-with col1:
-    analyze_clicked = st.button("🚀 Analyze")
-with col2:
-    clear_clicked = st.button("🔄 Clear")
-
-# Handle Clear
-if clear_clicked:
-    st.session_state.user_input = ""
-    st.experimental_rerun()
-
-# Handle Analyze
-if analyze_clicked:
-    # Handle file upload
-    if uploaded_file is not None:
-        articles = uploaded_file.read().decode("utf-8").strip().splitlines()
-        st.info(f"📄 {len(articles)} articles found in file.")
-        for idx, article in enumerate(articles, 1):
-            with st.spinner(f"Analyzing Article {idx}..."):
-                prediction = model(article)[0]
-                label = prediction["label"]
-                score = prediction["score"]
+    # File uploaded
+    if file_input is not None:
+        try:
+            content = file_input.read().decode("utf-8").strip().splitlines()
+            for idx, line in enumerate(content, 1):
+                pred = model(line)[0]
+                label = pred["label"]
+                score = pred["score"]
                 if label == "NEGATIVE":
-                    st.error(f"Article {idx}: 🛑 **FAKE** ({score:.2%})")
+                    results.append(f"🛑 Article {idx}: **FAKE** ({score:.2%})")
                 else:
-                    st.success(f"Article {idx}: ✅ **REAL** ({score:.2%})")
-    elif user_input.strip():
-        with st.spinner("Analyzing..."):
-            prediction = model(user_input)[0]
-            label = prediction["label"]
-            score = prediction["score"]
-            if label == "NEGATIVE":
-                st.error(f"🛑 Possibly **FAKE** ({score:.2%} confidence)")
-            else:
-                st.success(f"✅ Possibly **REAL** ({score:.2%} confidence)")
+                    results.append(f"✅ Article {idx}: **REAL** ({score:.2%})")
+            return "\n".join(results), gr.update()
+        except Exception as e:
+            return f"❌ Error reading file: {e}", gr.update()
+
+    # Text input
+    elif text_input.strip():
+        pred = model(text_input)[0]
+        label = pred["label"]
+        score = pred["score"]
+        if label == "NEGATIVE":
+            return f"🛑 Possibly **FAKE** ({score:.2%} confidence)", gr.update()
+        else:
+            return f"✅ Possibly **REAL** ({score:.2%} confidence)", gr.update()
+    
+    # No input
     else:
-        st.warning("Please enter text or upload a file.")
+        return "⚠️ Please enter text or upload a file.", gr.update()
+
+# Inputs
+text_box = gr.Textbox(label="✍️ Enter news headline or article here:", 
+                      placeholder="Type or paste here...", 
+                      lines=6, 
+                      value=example_text)
+
+file_upload = gr.File(label="📂 Or upload a .txt file with one article per line", 
+                      file_types=[".txt"])
+
+output = gr.Textbox(label="🧾 Results", lines=10)
+
+# Interface
+with gr.Blocks(title="📰 Fake News Detector") as demo:
+    gr.Markdown("## 📰 Fake News Detector")
+    gr.Markdown("Classify news as **real or fake** using a transformer model (demo).")
+
+    with gr.Row():
+        analyze_btn = gr.Button("🚀 Analyze")
+        clear_btn = gr.Button("🔄 Clear")
+
+    with gr.Row():
+        text_box.render()
+        file_upload.render()
+
+    output.render()
+
+    analyze_btn.click(analyze_news, inputs=[text_box, file_upload, gr.State(False)], outputs=[output, text_box])
+    clear_btn.click(analyze_news, inputs=[text_box, file_upload, gr.State(True)], outputs=[output, text_box])
+
+# Run
+if __name__ == "__main__":
+    demo.launch()
