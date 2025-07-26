@@ -2,7 +2,7 @@ from transformers import pipeline
 import gradio as gr
 
 # Load the model
-model = pipeline("text-classification", model="bert-fake-news-model")
+model = pipeline("text-classification", model="mrm8488/bert-tiny-finetuned-fake-news-detection")
 
 # Default example text
 example_text = "The Prime Minister announced a new healthcare plan today."
