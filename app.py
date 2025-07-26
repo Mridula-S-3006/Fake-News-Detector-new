@@ -2,19 +2,17 @@ import os
 
 # Set up local config/cache paths inside the working directory
 os.environ["XDG_CONFIG_HOME"] = os.path.join(os.getcwd(), ".streamlit_config")
-os.environ["XDG_CACHE_HOME"] = os.path.join(os.getcwd(), ".streamlit_cache")
-
-# Make sure the folders exist
-os.makedirs(os.environ["XDG_CONFIG_HOME"], exist_ok=True)
-os.makedirs(os.environ["XDG_CACHE_HOME"], exist_ok=True)
 
 # Optional: suppress Streamlit analytics
 config_path = os.path.join(os.environ["XDG_CONFIG_HOME"], "config.toml")
-with open(config_path, "w") as f:
+with open('.streamlit/config.toml', "w") as f:
     f.write("""
-[browser]
-gatherUsageStats = false
-""")
+            [server]
+            headless = true
+            port = 7860
+            enableCORS = false
+            [browser]
+            gatherUsageStats = false""")
 
 
 import streamlit as st
