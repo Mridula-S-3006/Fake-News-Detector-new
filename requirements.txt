@@ -5,3 +5,6 @@ pandas
 matplotlib
 seaborn
 wordcloud
+altair
+pandas
+streamlit
