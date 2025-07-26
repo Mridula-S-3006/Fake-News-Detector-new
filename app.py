@@ -1,8 +1,9 @@
+import os
 import streamlit as st
 from transformers import pipeline
 
 st.set_page_config(page_title="Fake News Detector", layout="centered")
-
+os.environ["HOME"] = "/tmp"
 st.title("📰 Fake News Detector")
 st.markdown("Classify news as **real or fake** using a transformer model (demo).")
 
