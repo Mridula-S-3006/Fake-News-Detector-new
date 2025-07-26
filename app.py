@@ -4,8 +4,12 @@ from transformers import pipeline
 
 os.environ["XDG_CONFIG_HOME"] = os.path.join(os.getcwd(), ".config")
 os.environ["XDG_CACHE_HOME"] = os.path.join(os.getcwd(), ".cache")
-os.makedirs(".config", exist_ok=True)
+
+os.makedirs(".config/streamlit", exist_ok=True)
 os.makedirs(".cache", exist_ok=True)
+
+with open(".config/streamlit/config.toml", "w") as f:
+    f.write("[browser]\ngatherUsageStats = false\n")
 
 st.set_page_config(page_title="Fake News Detector", layout="centered")
 st.title("📰 Fake News Detector")
