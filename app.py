@@ -1,31 +1,12 @@
 import os
-import streamlit as st
-from transformers import pipeline
 
-os.environ["XDG_CONFIG_HOME"] = os.path.join(os.getcwd(), ".config")
 os.environ["XDG_CACHE_HOME"] = os.path.join(os.getcwd(), ".cache")
-
 os.makedirs(".config/streamlit", exist_ok=True)
 os.makedirs(".cache", exist_ok=True)
-os.environ["XDG_CONFIG_HOME"] = os.path.join(os.path.expanduser("~"), ".streamlit")
 os.environ["XDG_CACHE_HOME"] = os.path.join(os.path.expanduser("~"), ".cache")
-os.environ["STREAMLIT_CONFIG_FILE"] = os.path.join(os.path.dirname(__file__), ".streamlit", "config.toml")
 
-os.makedirs('.streamlit', exist_ok=True)
-
-with open('.streamlit/config.toml', 'w') as f:
-    f.write("""
-[server]
-headless = true
-port = 7860
-enableCORS = false
-
-[browser]
-gatherUsageStats = false
-""")
-    
-with open(".config/streamlit/config.toml", "w") as f:
-    f.write("[browser]\ngatherUsageStats = false\n")
+import streamlit as st
+from transformers import pipeline
 
 st.set_page_config(page_title="Fake News Detector", layout="centered")
 st.title("📰 Fake News Detector")
