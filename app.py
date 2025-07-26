@@ -2,9 +2,12 @@ import os
 import streamlit as st
 from transformers import pipeline
 
-st.set_page_config(page_title="Fake News Detector", layout="centered")
 os.environ["XDG_CONFIG_HOME"] = os.path.join(os.getcwd(), ".config")
 os.environ["XDG_CACHE_HOME"] = os.path.join(os.getcwd(), ".cache")
+os.makedirs(".config", exist_ok=True)
+os.makedirs(".cache", exist_ok=True)
+
+st.set_page_config(page_title="Fake News Detector", layout="centered")
 st.title("📰 Fake News Detector")
 st.markdown("Classify news as **real or fake** using a transformer model (demo).")
 
