@@ -7,6 +7,8 @@ os.environ["XDG_CACHE_HOME"] = os.path.join(os.getcwd(), ".cache")
 
 os.makedirs(".config/streamlit", exist_ok=True)
 os.makedirs(".cache", exist_ok=True)
+os.environ["XDG_CONFIG_HOME"] = os.path.join(os.path.expanduser("~"), ".streamlit")
+os.environ["XDG_CACHE_HOME"] = os.path.join(os.path.expanduser("~"), ".cache")
 
 with open(".config/streamlit/config.toml", "w") as f:
     f.write("[browser]\ngatherUsageStats = false\n")
