@@ -1,20 +1,3 @@
-import os
-
-# Set up local config/cache paths inside the working directory
-os.environ["XDG_CONFIG_HOME"] = os.path.join(os.getcwd(), ".streamlit_config")
-
-# Optional: suppress Streamlit analytics
-config_path = os.path.join(os.environ["XDG_CONFIG_HOME"], "config.toml")
-with open('.streamlit/config.toml', "w") as f:
-    f.write("""
-            [server]
-            headless = true
-            port = 7860
-            enableCORS = false
-            [browser]
-            gatherUsageStats = false""")
-
-
 import streamlit as st
 from transformers import pipeline
 

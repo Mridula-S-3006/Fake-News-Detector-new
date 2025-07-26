@@ -9,12 +9,6 @@ font="serif"
 headless = true
 port = 7860
 enableCORS = false
-enableXsrfProtection = false
-
-[server]
-headless = true
-port = 7860
-enableCORS = false
 
 [browser]
 gatherUsageStats = false
